@@ -154,8 +154,14 @@
         color: #4a5568;
       }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0;
-          background: #fff; border-radius: 8px; overflow: visible; font-size: 12px; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 12px;
+      }
       th {
         background: #edf2f7;
         text-align: left;
@@ -708,107 +714,7 @@
         width: 300px;
         font-size: 11.5px;
       }
-    
-  
-
-
-  
-
-
-  /* ═══════════════════════════════════════════════════
-     STICKY v3 — Sidebar + Frozen columns + Zone BG
-     ═══════════════════════════════════════════════════ */
-
-  /* Sidebar sticky */
-  nav {
-    position: sticky !important;
-    top: 0 !important;
-    align-self: start;
-    height: calc(100vh - 76px);
-    overflow-y: auto;
-    z-index: 10;
-  }
-
-  main {
-    overflow: auto;
-    height: calc(100vh - 76px);
-  }
-
-  #data-table {
-    border-collapse: separate !important;
-    border-spacing: 0;
-  }
-
-  /* ─── Header sticky top ─── */
-  #data-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: #edf2f7;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  /* ─── Frozen zone (Row + Flag) ───
-     ใช้สี background ต่างจาก column อื่น + shadow ด้านขวา
-     ขนาดรวม ~200px */
-
-  /* Row column — sticky left */
-  #data-table th:nth-child(1),
-  #data-table td:nth-child(1) {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
-    background: #f0f4f8;           /* ฟ้าอ่อน = sticky zone */
-    border-right: 1px solid #e2e8f0;
-    font-weight: 600;
-    color: #2c5282;
-    text-align: center;
-  }
-
-  /* Flag column — sticky left ต่อจาก Row */
-  #data-table th:nth-child(2),
-  #data-table td:nth-child(2) {
-    position: sticky;
-    left: 60px;
-    z-index: 3;
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    background: #f0f4f8;
-    border-right: 2px solid #cbd5e0;
-    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.15);   /* shadow แบ่งเขต */
-  }
-
-  /* Header cells ของ sticky zone */
-  #data-table thead th:nth-child(1),
-  #data-table thead th:nth-child(2) {
-    z-index: 7;
-    background: #dbeafe;           /* ฟ้าเข้มขึ้นนิด */
-    color: #1e40af;
-    border-bottom: 2px solid #93c5fd;
-  }
-
-  /* Hover — ให้ sticky cells ดูมีปฏิสัมพันธ์ด้วย */
-  #data-table tbody tr:hover td:nth-child(1),
-  #data-table tbody tr:hover td:nth-child(2) {
-    background: #e6f0fa;
-  }
-
-  /* ให้ body cells อื่นมี background ขาว */
-  #data-table tbody td {
-    background: #ffffff;
-  }
-
-  /* ปรับ evidence cells ให้อยู่เหนือ */
-  .ev-cell, .ev-th {
-    position: relative;
-    z-index: 1;
-  }
-
-</style>
+    </style>
   </head>
   <body>
     <header>

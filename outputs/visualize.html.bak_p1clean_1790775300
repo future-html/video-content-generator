@@ -122,21 +122,7 @@
         cursor: default;
         opacity: 0.75;
       }
-    
-  .issue.ok { border-left-color: #38a169; }
-  .issue.ok::after {
-    content: " ✓ resolved";
-    font-size: 10px;
-    color: #38a169;
-    font-weight: 700;
-  }
-  .issue.warn::after {
-    content: " ⚠ ต้องติดตาม";
-    font-size: 10px;
-    color: #dd6b20;
-    font-weight: 700;
-  }
-  .issue.no-map::after {
+      .issue.no-map::after {
         content: " (ไม่มี row mapping)";
         font-size: 10px;
         color: #a0aec0;
@@ -154,8 +140,14 @@
         color: #4a5568;
       }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0;
-          background: #fff; border-radius: 8px; overflow: visible; font-size: 12px; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 12px;
+      }
       th {
         background: #edf2f7;
         text-align: left;
@@ -708,107 +700,7 @@
         width: 300px;
         font-size: 11.5px;
       }
-    
-  
-
-
-  
-
-
-  /* ═══════════════════════════════════════════════════
-     STICKY v3 — Sidebar + Frozen columns + Zone BG
-     ═══════════════════════════════════════════════════ */
-
-  /* Sidebar sticky */
-  nav {
-    position: sticky !important;
-    top: 0 !important;
-    align-self: start;
-    height: calc(100vh - 76px);
-    overflow-y: auto;
-    z-index: 10;
-  }
-
-  main {
-    overflow: auto;
-    height: calc(100vh - 76px);
-  }
-
-  #data-table {
-    border-collapse: separate !important;
-    border-spacing: 0;
-  }
-
-  /* ─── Header sticky top ─── */
-  #data-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: #edf2f7;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  /* ─── Frozen zone (Row + Flag) ───
-     ใช้สี background ต่างจาก column อื่น + shadow ด้านขวา
-     ขนาดรวม ~200px */
-
-  /* Row column — sticky left */
-  #data-table th:nth-child(1),
-  #data-table td:nth-child(1) {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    width: 60px;
-    min-width: 60px;
-    max-width: 60px;
-    background: #f0f4f8;           /* ฟ้าอ่อน = sticky zone */
-    border-right: 1px solid #e2e8f0;
-    font-weight: 600;
-    color: #2c5282;
-    text-align: center;
-  }
-
-  /* Flag column — sticky left ต่อจาก Row */
-  #data-table th:nth-child(2),
-  #data-table td:nth-child(2) {
-    position: sticky;
-    left: 60px;
-    z-index: 3;
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    background: #f0f4f8;
-    border-right: 2px solid #cbd5e0;
-    box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.15);   /* shadow แบ่งเขต */
-  }
-
-  /* Header cells ของ sticky zone */
-  #data-table thead th:nth-child(1),
-  #data-table thead th:nth-child(2) {
-    z-index: 7;
-    background: #dbeafe;           /* ฟ้าเข้มขึ้นนิด */
-    color: #1e40af;
-    border-bottom: 2px solid #93c5fd;
-  }
-
-  /* Hover — ให้ sticky cells ดูมีปฏิสัมพันธ์ด้วย */
-  #data-table tbody tr:hover td:nth-child(1),
-  #data-table tbody tr:hover td:nth-child(2) {
-    background: #e6f0fa;
-  }
-
-  /* ให้ body cells อื่นมี background ขาว */
-  #data-table tbody td {
-    background: #ffffff;
-  }
-
-  /* ปรับ evidence cells ให้อยู่เหนือ */
-  .ev-cell, .ev-th {
-    position: relative;
-    z-index: 1;
-  }
-
-</style>
+    </style>
   </head>
   <body>
     <header>
@@ -844,87 +736,129 @@
       };
 
       const ISSUE_SUMMARY = [
-  // ─── Resolved ───
-  { id: "P1",  level: "ok",   t: "DAILY_ACCOUNT ขาดข้อมูล (resolved)",       d: "row 07-23 Slot 7 — inserted + filled ตรง input" },
-  { id: "P2",  level: "ok",   t: "Comment ID ชนกัน (resolved)",               d: "IC-0012 ซ้ำ → แยกเป็น IC-0013 (1:1 แล้ว)" },
-  { id: "P3",  level: "ok",   t: "Test Group mismatch (resolved)",            d: "50 rows เดิม CE ≠ DA → sync แล้ว (0 mismatch)" },
-  { id: "P4",  level: "ok",   t: "Direct-sell หลุด QC (resolved)",            d: "3 rows เปลี่ยน OK → Review ตาม keyword" },
-  { id: "P8",  level: "ok",   t: "Reply Owner = 0 (resolved)",                d: "IC-0044 — 0 → — (VLOOKUP cache artifact)" },
-  { id: "P10", level: "ok",   t: "Completeness ขัดแย้ง (resolved)",           d: "07-22+07-23 QC Review → Pass — recalc หลังแก้ P1+P2" },
-  { id: "P11", level: "ok",   t: "Linked Row off-by-one (resolved)",          d: "EVIDENCE_INDEX 45 → 44 (ตรง IC+4)" },
-  { id: "P12", level: "ok",   t: "Product Clicks ไม่ตรง (resolved)",          d: "242 → 237 — ตรงกับ input brand_snapshot" },
-
-  // ─── Codex mis-analysis (ยังต้อง note) ───
-  { id: "P2b", level: "warn", t: "Codex mis-analysis (verified)",             d: "Codex ระบุ false positive — ตรวจแล้ว IC-0012 มี keyword 3 คำ → Review ถูกต้อง" },
-
-  // ─── Info only (ยังต้องติดตาม) ───
-  { id: "P5",  level: "warn", t: "Image Fit ว่าง (ยังต้องติดตาม)",            d: "83/100 rows blank — ต้อง manual review" },
-  { id: "P6",  level: "warn", t: "Visibility เปลี่ยน (ยังต้องติดตาม)",        d: "28 transitions (18 Visible→Missing) — shadowban signal" },
-  { id: "P7",  level: "warn", t: "Slot 1,6 visibility 0% (ยังต้องติดตาม)",    d: "8 slot-days — ต้อง account health rule" },
-  { id: "P9",  level: "warn", t: "Cart Status ว่าง (ยังต้องติดตาม)",          d: "100 rows blank — ไม่มี source field" },
-];
+        {
+          id: "P1",
+          level: "",
+          t: "DAILY_ACCOUNT ขาด 1 row",
+          d: "39/40 rows — Slot 7 วันที่ 23",
+        },
+        {
+          id: "P2",
+          level: "",
+          t: "Comment ID ชนกัน",
+          d: "IC-0012 duplicated; IC-0013 missing in 1..100",
+        },
+        {
+          id: "P3",
+          level: "info",
+          t: "Test Group mismatch (resolved)",
+          d: "50 rows เดิม CE ไม่ตรง DA — Codex sync แล้ว (0 mismatch)",
+        },
+        {
+          id: "P4",
+          level: "",
+          t: "Direct-sell หลุด QC",
+          d: "3 rows flagged (Fix: restore formula + keyword check)",
+        },
+        {
+          id: "P5",
+          level: "warn",
+          t: "Image Fit ว่าง",
+          d: "83/100 rows blank (Info only: N1)",
+        },
+        {
+          id: "P6",
+          level: "warn",
+          t: "Visibility เปลี่ยน",
+          d: "28 transitions, 18 Visible→Missing (Info only: N3)",
+        },
+        {
+          id: "P7",
+          level: "",
+          t: "Slot 1,6 visibility 0%",
+          d: "8 slot-days across 4 days (Info only: N5)",
+        },
+        {
+          id: "P8",
+          level: "warn",
+          t: 'Reply Owner = "0"',
+          d: "IC-0044 — formula chain VLOOKUP+IFERROR",
+        },
+        {
+          id: "P9",
+          level: "warn",
+          t: "Cart Status ว่าง",
+          d: "100 rows blank in COMMENT_EXECUTION (Info only: N2)",
+        },
+        {
+          id: "P10",
+          level: "info",
+          t: "Completeness ขัดแย้ง",
+          d: "2026-07-22 Actual 24 < Required 25",
+        },
+        {
+          id: "P11",
+          level: "warn",
+          t: "Linked Row ผิด",
+          d: "EVIDENCE_INDEX row 44: 45→44 (off-by-one)",
+        },
+        {
+          id: "P12",
+          level: "info",
+          t: "Product Clicks ไม่ตรง",
+          d: "DAILY_BRAND row 8: 242 vs input 237",
+        },
+        
+      ];
 
       const ISSUE_DESCRIPTIONS = {
-  P1:  "DAILY_ACCOUNT ขาด 1 row — row 07-23 Slot 7 inserted + filled จาก input (resolved)",
-  P2:  "Comment ID ชนกัน — IC-0012 ซ้ำ → แยกเป็น IC-0013, ตอนนี้ 1:1 (resolved)",
-  P2b: "Codex วิเคราะห์ผิด — บอก IC-0012 false positive แต่ text มี keyword 3 คำ → Review ถูกต้อง (mis-analysis)",
-  P3:  "Test Group mismatch — Codex sync CE ตาม DA ครบ 50 rows → 0 mismatch (resolved)",
-  P4:  "Direct-sell หลุด QC — 3 rows เปลี่ยน OK → Review ตาม keyword 8 คำ (resolved)",
-  P5:  "Image Fit ว่าง 83 rows — ต้อง manual review (ยังต้องติดตาม)",
-  P6:  "Visibility เปลี่ยน 28 transitions — 18 Visible→Missing = shadowban signal (ยังต้องติดตาม)",
-  P7:  "Slot 1,6 visibility 0% 8 slot-days — ต้องเพิ่ม account health rule (ยังต้องติดตาม)",
-  P8:  "Reply Owner = 0 จาก VLOOKUP chain — แก้ X92 formula ให้ handle blank (resolved)",
-  P9:  "Cart Status ว่าง 100 rows — ไม่มี source field (ยังต้องติดตาม)",
-  P10: "Completeness ขัดแย้ง — resolve ผ่าน P1+P2 → COUNTIF ครบ → QC = Pass (resolved)",
-  P11: "Linked Row off-by-one — 45 → 44 ตรงสูตร IC+4 (resolved)",
-  P12: "Product Clicks ไม่ตรง — 242 → 237 ตรงกับ input brand_snapshot (resolved)",
-};
-
-
-      function beforeAfterVal(sheet, r, field) {
-        const br = getBeforeRow(sheet, r);
-        if (!br) return null;
-        const bef = br[field];
-        const aft = r[field];
-        if (bef === undefined && aft === undefined) return null;
-        const b = bef === null || bef === "" ? "∅" : String(bef);
-        const a = aft === null || aft === "" ? "∅" : String(aft);
-        if (b === a) return a;
-        return b + " → " + a;
-      }
+        P1: "DAILY_ACCOUNT ขาด 1 row — ตรวจว่ามี 10 slot ครบทุกวันไหม (39/40 rows)",
+        P2: "Comment ID ชนกัน — ตรวจ IC-0012 ซ้ำ และ IC-0013 หายไปในลำดับ 1..100",
+        P3: "Test Group mismatch — เทียบ Test Group ระหว่าง COMMENT_EXECUTION กับ DAILY_ACCOUNT ของ account+วันเดียวกัน",
+        P4: "Direct-sell หลุด QC — ตรวจ QC Exception Flag ของ comment ที่มีคำขายตรง (ซื้อเลย, โปรแรง, ทักด่วน ฯลฯ)",
+        P5: "Image Fit ว่าง — ตรวจ Image Fit To Context ที่ยังไม่ได้ประเมิน (N/A)",
+        P6: "Visibility เปลี่ยน — เทียบผล 30m กับ 24h ว่าต่างกันไหม (signal ของ shadowban)",
+        P7: "Slot 1,6 visibility 0% — ตรวจ Account Slot 1 และ 6 ที่ Visible Comment Count = 0 ตลอด 4 วัน",
+        P8: 'Reply Owner = "0" — ตรวจ VLOOKUP chain ของ IC-0044 ที่ได้ค่า 0 จาก Excel cache',
+        P9: "Cart Status ว่าง — ตรวจ Cart Status ที่ไม่มี source field ใน COMMENT_EXECUTION",
+        P10: "Completeness ขัดแย้ง — ตรวจ Required vs Actual Rows ที่ไม่ตรงกันใน COMPLETENESS_CHECK",
+        P11: "Linked Row ผิด off-by-one — ตรวจ Linked Row ใน EVIDENCE_INDEX ที่ชี้ผิดแถว (45 ควรเป็น 44)",
+        P12: "Product Clicks ไม่ตรง — เทียบ DAILY_BRAND กับ input brand_snapshot (242 vs 237)",
+      };
 
       const EVIDENCE_RULES = {
         P1: {
-          condition: "นับ slot ต่อวัน — Before vs After",
+          condition: "นับ slot ต่อวัน — Before → After, คาด 10",
           cols: [
             {
               label: "Before",
-              get: (r) => {
+              get: (r, ctx) => {
                 if (!window.BEFORE_DATA || !window.BEFORE_DATA.sheets.DAILY_ACCOUNT) return "—";
-                return window.BEFORE_DATA.sheets.DAILY_ACCOUNT.records
-                  .filter((o) => String(o["Date"]) === String(r["Date"])).length;
+                const recs = window.BEFORE_DATA.sheets.DAILY_ACCOUNT.records;
+                return recs.filter((o) => String(o["Date"]) === String(r["Date"])).length;
               },
             },
             {
               label: "After",
-              get: (r, ctx) =>
-                ctx.sheet("DAILY_ACCOUNT")
-                  .filter((o) => String(o["Date"]) === String(r["Date"])).length,
+              get: (r, ctx) => {
+                return ctx
+                  .sheet("DAILY_ACCOUNT")
+                  .filter((o) => String(o["Date"]) === String(r["Date"])).length;
+              },
+            },
+            {
+              label: "After === 10?",
+              computeMatch: (r, ctx) =>
+                ctx
+                  .sheet("DAILY_ACCOUNT")
+                  .filter((o) => String(o["Date"]) === String(r["Date"]))
+                  .length === 10,
             },
           ],
         },
         P2: {
           condition: "IC-0012 ต้องมี 1 row และ IC-0013 ต้องมี",
           cols: [
-            {
-              label: "Before → After",
-              get: (r, ctx) => {
-                const curCount = ctx.sheet("COMMENT_EXECUTION").filter(o => o["Comment ID"] === "IC-0012").length;
-                if (!window.BEFORE_DATA || !window.BEFORE_DATA.sheets.COMMENT_EXECUTION) return curCount;
-                const befCount = window.BEFORE_DATA.sheets.COMMENT_EXECUTION.records.filter(o => o["Comment ID"] === "IC-0012").length;
-                return befCount !== curCount ? befCount + " → " + curCount : curCount;
-              },
-            },
             {
               label: "IC-0012 count",
               get: (r, ctx) =>
@@ -957,10 +891,6 @@
         P3: {
           condition: "Test Group (CE) ต้องตรงกับ (DA)",
           cols: [
-            {
-              label: "Before → After",
-              get: (r) => beforeAfterVal("COMMENT_EXECUTION", r, "Test Group"),
-            },
             { label: "TestGroup CE", get: (r) => r["Test Group"] },
             {
               label: "TestGroup DA",
@@ -997,10 +927,6 @@
         P4: {
           condition: "QC Exception Flag ต้องเป็น Review เมื่อมีคำขายตรง",
           cols: [
-            {
-              label: "Before → After",
-              get: (r) => beforeAfterVal("COMMENT_EXECUTION", r, "QC Exception Flag"),
-            },
             { label: "QC Flag", get: (r) => r["QC Exception Flag"] },
             {
               label: "มีคำขายตรง?",
@@ -1111,10 +1037,6 @@
         P8: {
           condition: "Reply Owner ∈ {User, Creator, Mixed}",
           cols: [
-            {
-              label: "Before → After",
-              get: (r) => beforeAfterVal("COMMENT_EXECUTION", r, "Reply Owner Type"),
-            },
             { label: "ReplyOwner", get: (r) => r["Reply Owner Type"] },
             {
               label: "ReplyOwner ∈ {User,Creator,Mixed}?",
@@ -1142,10 +1064,6 @@
           condition: "Actual Rows = Required Rows",
           cols: [
             {
-              label: "Before → After",
-              get: (r) => beforeAfterVal("COMPLETENESS_CHECK", r, "Actual Rows"),
-            },
-            {
               label: "Actual Rows",
               get: (r) => {
                 const a = r["Actual Rows"];
@@ -1166,10 +1084,6 @@
         P11: {
           condition: "Linked Row = IC number + 4",
           cols: [
-            {
-              label: "Before → After",
-              get: (r) => beforeAfterVal("EVIDENCE_INDEX", r, "Linked Row"),
-            },
             { label: "LinkedRow", get: (r) => r["Linked Row"] },
             {
               label: "คาด (IC+4)",
