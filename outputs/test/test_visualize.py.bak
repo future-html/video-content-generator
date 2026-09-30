@@ -1,13 +1,34 @@
 #!/usr/bin/env python3
-"""Automated test suite for outputs/visualize.html — v2 (robust)"""
-import json, re, subprocess, sys, tempfile
+"""
+Automated test suite for outputs/visualize.html
+
+Tests:
+  1. Files exist
+  2. Extract JS blocks from HTML
+  3. Build P6_IDS from data.json (Python)
+  4. Run predicates in Node VM
+  5. ISSUE_SUMMARY has 12 items P1-P12
+  6. ISSUE_MARKS covers all P1-P12
+  7. isFlaggedRow counts match expected
+  8. JS syntax check (node --check)
+
+Usage:
+  python3 outputs/test/test_visualize.py
+  outputs/test/run.sh
+"""
+import json
+import re
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 HTML = ROOT / 'outputs' / 'visualize.html'
 DATA = ROOT / 'outputs' / 'data.json'
 
-PASS, FAIL = 0, 0
+PASS = 0
+FAIL = 0
 FAILURES = []
 
 
@@ -22,40 +43,8 @@ def ok(name, cond, detail=''):
         FAILURES.append(name)
 
 
-def section(t):
-    print(f'\n=== {t} ===')
-
-
-def extract_balanced(script, marker, open_ch, close_ch):
-    """Extract block from `marker` to matching `close_ch` (balanced braces)."""
-    i = script.find(marker)
-    if i < 0:
-        return None
-    j = script.find(open_ch, i + len(marker))
-    if j < 0:
-        return None
-    depth = 0
-    in_str = None
-    k = j
-    while k < len(script):
-        ch = script[k]
-        if in_str:
-            if ch == '\\':
-                k += 2
-                continue
-            if ch == in_str:
-                in_str = None
-        else:
-            if ch in ('"', "'", '`'):
-                in_str = ch
-            elif ch == open_ch:
-                depth += 1
-            elif ch == close_ch:
-                depth -= 1
-                if depth == 0:
-                    return script[i:k + 1]
-        k += 1
-    return None
+def section(title):
+    print(f'\n=== {title} ===')
 
 
 def main():
@@ -75,14 +64,14 @@ def main():
         return 1
     script = sm.group(1)
 
-    summary_src = extract_balanced(script, 'const ISSUE_SUMMARY', '[', ']')
-    marks_src = extract_balanced(script, 'const ISSUE_MARKS', '{', '}')
-    flag_src = extract_balanced(script, 'function isFlaggedRow', '{', '}')
+    def extract(pattern, name):
+        m = re.search(pattern, script)
+        ok(f'extract {name}', bool(m))
+        return m.group(0) if m else None
 
-    ok('extract ISSUE_SUMMARY', bool(summary_src), '' if summary_src else 'not found')
-    ok('extract ISSUE_MARKS', bool(marks_src), '' if marks_src else 'not found')
-    ok('extract isFlaggedRow', bool(flag_src), '' if flag_src else 'not found')
-
+    summary_src = extract(r'const ISSUE_SUMMARY = \[[\s\S]*?\n\];', 'ISSUE_SUMMARY')
+    marks_src = extract(r'const ISSUE_MARKS = \{[\s\S]*?\n\};', 'ISSUE_MARKS')
+    flag_src = extract(r'function isFlaggedRow\(sheet, rec\) \{[\s\S]*?\n\}', 'isFlaggedRow')
     if not all([summary_src, marks_src, flag_src]):
         return 1
 
@@ -101,7 +90,8 @@ def main():
     wrapper_js = """
 const fs = require('fs');
 const data = JSON.parse(fs.readFileSync('__DATA__', 'utf-8'));
-const window = { P6_IDS: new Set(__P6__) };
+const P6_IDS = new Set(__P6__);
+const window = { P6_IDS };
 
 __SUMMARY__
 
@@ -120,7 +110,7 @@ function uniq(sheet, pid) {
   return s.size;
 }
 
-console.log(JSON.stringify({
+const result = {
   summary_ids: ISSUE_SUMMARY.map(x => x.id),
   summary_len: ISSUE_SUMMARY.length,
   marked: (() => {
@@ -132,7 +122,7 @@ console.log(JSON.stringify({
   counts: {
     P1_DAILY_ACCOUNT: cnt('DAILY_ACCOUNT', 'P1'),
     P2_COMMENT_EXECUTION: cnt('COMMENT_EXECUTION', 'P2'),
-    P3_COMMENT_EXECUTION: cnt('COMMENT_EXECUTION', 'P3'),
+    P3_DAILY_ACCOUNT: cnt('DAILY_ACCOUNT', 'P3'),
     P4_COMMENT_EXECUTION: cnt('COMMENT_EXECUTION', 'P4'),
     P5_COMMENT_EXECUTION: cnt('COMMENT_EXECUTION', 'P5'),
     P7_DAILY_ACCOUNT: cnt('DAILY_ACCOUNT', 'P7'),
@@ -143,14 +133,17 @@ console.log(JSON.stringify({
     P12_DAILY_BRAND: cnt('DAILY_BRAND', 'P12'),
     P6_uniq: uniq('COMMENT_RECHECK', 'P6'),
   }
-}));
+};
+console.log(JSON.stringify(result));
 """
-    wrapper_js = (wrapper_js
+    wrapper_js = (
+        wrapper_js
         .replace('__DATA__', str(DATA))
         .replace('__P6__', json.dumps(p6_ids))
         .replace('__SUMMARY__', summary_src)
         .replace('__MARKS__', marks_src)
-        .replace('__FLAG__', flag_src))
+        .replace('__FLAG__', flag_src)
+    )
 
     with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
         f.write(wrapper_js)
@@ -159,9 +152,11 @@ console.log(JSON.stringify({
         try:
             r = subprocess.run(['node', tmp], capture_output=True, text=True, timeout=30)
         except FileNotFoundError:
-            ok('node available', False, 'node not found'); return 1
+            ok('node available', False, 'node not found in PATH')
+            return 1
         if r.returncode != 0:
-            ok('node wrapper run', False, r.stderr.strip()[:200]); return 1
+            ok('node wrapper run', False, r.stderr.strip()[:200])
+            return 1
         ok('node wrapper run', True)
         result = json.loads(r.stdout.strip())
     finally:
@@ -179,25 +174,25 @@ console.log(JSON.stringify({
 
     section('7. isFlaggedRow counts')
     expected = [
-        ('P1_DAILY_ACCOUNT', 1),           # row ที่ขาด (inserted + filled)
-        ('P2_COMMENT_EXECUTION', 1),       # IC-0012 (collision)
-        ('P3_COMMENT_EXECUTION', 0),       # resolved — Codex sync ครบ
-        ('P4_COMMENT_EXECUTION', 3),       # direct-sell keyword
-        ('P5_COMMENT_EXECUTION', 83),      # Image Fit = N/A
-        ('P7_DAILY_ACCOUNT', 8),           # Slot 1+6 = 0
-        ('P8_COMMENT_EXECUTION', 1),       # IC-0044 Reply Owner = 0
-        ('P9_COMMENT_EXECUTION', 100),     # Cart Status = N/A
-        ('P10_COMPLETENESS_CHECK', 0),     # resolved — recalc 25=25
-        ('P11_EVIDENCE_INDEX', 1),         # Linked Row 45→44
-        ('P12_DAILY_BRAND', 1),            # Product Clicks 242→237
-        ('P6_uniq', 28),                   # 30m≠24h transitions
+        ('P1_DAILY_ACCOUNT', 1),
+        ('P2_COMMENT_EXECUTION', 1),
+        ('P3_DAILY_ACCOUNT', 40),
+        ('P4_COMMENT_EXECUTION', 3),
+        ('P5_COMMENT_EXECUTION', 83),
+        ('P7_DAILY_ACCOUNT', 8),
+        ('P8_COMMENT_EXECUTION', 1),
+        ('P9_COMMENT_EXECUTION', 100),
+        ('P10_COMPLETENESS_CHECK', 4),
+        ('P11_EVIDENCE_INDEX', 1),
+        ('P12_DAILY_BRAND', 1),
+        ('P6_uniq', 28),
     ]
     for key, exp in expected:
         actual = result['counts'][key]
         ok(f'{key} = {exp}', actual == exp, f'actual: {actual}')
 
     section('8. JS syntax check')
-    tmp_js = Path(tempfile.gettempdir()) / 'viz_check.js'
+    tmp_js = Path('/tmp/viz_check.js')
     tmp_js.write_text(script, encoding='utf-8')
     try:
         r = subprocess.run(['node', '--check', str(tmp_js)], capture_output=True, text=True)

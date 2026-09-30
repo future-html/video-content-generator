@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Whiteshirt Data Visualizer</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", sans-serif;
+         margin: 0; background: #f5f7fa; color: #1a202c; }
+  header { background: #1a365d; color: #fff; padding: 16px 24px; }
+  header h1 { margin: 0 0 4px; font-size: 20px; }
+  header p { margin: 0; opacity: 0.8; font-size: 13px; }
+
+  .container { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 76px); }
+  nav { background: #fff; border-right: 1px solid #e2e8f0; padding: 16px; overflow-y: auto; }
+  main { padding: 20px; overflow-y: auto; }
+
+  nav h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+           color: #718096; margin: 16px 0 8px; }
+  nav button { display: block; width: 100%; text-align: left;
+               padding: 8px 12px; margin-bottom: 4px; border: none;
+               background: #edf2f7; border-radius: 6px; cursor: pointer;
+               font-size: 13px; font-family: inherit; }
+  nav button:hover { background: #e2e8f0; }
+  nav button.active { background: #3182ce; color: #fff; }
+  nav .count { float: right; opacity: 0.6; font-size: 11px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+           gap: 12px; margin-bottom: 20px; }
+  .stat { background: #fff; padding: 12px 16px; border-radius: 8px;
+          border-left: 3px solid #3182ce; }
+  .stat .n { font-size: 22px; font-weight: 600; }
+  .stat .l { font-size: 11px; color: #718096; text-transform: uppercase; }
+
+  .issues { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px; margin-bottom: 20px; }
+  .issue { background: #fff; padding: 12px 16px; border-radius: 8px;
+           border-left: 4px solid #e53e3e; cursor: pointer; }
+  .issue.warn { border-left-color: #dd6b20; }
+  .issue.info { border-left-color: #3182ce; }
+  .issue.no-map { cursor: default; opacity: 0.75; }
+  .issue.no-map::after { content: " (ไม่มี row mapping)"; font-size: 10px; color: #a0aec0; }
+  .issue:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .issue h4 { margin: 0 0 4px; font-size: 13px; }
+  .issue p { margin: 0; font-size: 12px; color: #4a5568; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff;
+          border-radius: 8px; overflow: hidden; font-size: 12px; }
+  th { background: #edf2f7; text-align: left; padding: 8px 12px;
+       font-weight: 600; font-size: 11px; text-transform: uppercase;
+       color: #4a5568; border-bottom: 1px solid #e2e8f0;
+       position: sticky; top: 0; z-index: 5; }
+  td { padding: 7px 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+  tr:hover td { background: #f7fafc; }
+
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 10px;
+           font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .b-ok { background: #c6f6d5; color: #22543d; }
+  .b-review { background: #fed7d7; color: #742a2a; }
+  .b-fit { background: #bee3f8; color: #2a4365; }
+  .b-warn { background: #feebc8; color: #7b341e; }
+  .b-gray { background: #e2e8f0; color: #4a5568; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+             margin-bottom: 12px; }
+  .toolbar input[type="search"] {
+    flex: 1; min-width: 200px; padding: 7px 12px; border: 1px solid #cbd5e0;
+    border-radius: 6px; font-size: 13px; font-family: inherit;
+  }
+  .toolbar select {
+    padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 6px;
+    font-size: 12px; font-family: inherit; background: #fff;
+  }
+  .filter-tag { display: inline-flex; align-items: center; gap: 6px;
+                background: #ebf8ff; color: #2c5282; padding: 4px 8px;
+                border-radius: 12px; font-size: 11px; }
+  .filter-tag button { background: none; border: none; cursor: pointer;
+                       color: inherit; font-size: 14px; padding: 0; line-height: 1; }
+  .clear-filters { background: #edf2f7; border: 1px solid #cbd5e0;
+                   padding: 6px 12px; border-radius: 6px; cursor: pointer;
+                   font-size: 12px; font-family: inherit; }
+  .clear-filters:hover { background: #e2e8f0; }
+
+  .truncate { max-width: 360px; white-space: nowrap; overflow: hidden;
+              text-overflow: ellipsis; }
+  .highlight { background: #fefcbf; padding: 0 2px; border-radius: 2px; }
+  .empty { padding: 40px; text-align: center; color: #a0aec0; }
+  .info-line { font-size: 12px; color: #718096; margin: 0 0 10px; }
+
+  .pagination { display: flex; gap: 8px; justify-content: center;
+                align-items: center; padding: 16px 0; font-size: 13px; }
+  .pagination button { padding: 5px 10px; border: 1px solid #cbd5e0;
+                       background: #fff; border-radius: 6px; cursor: pointer;
+                       font-family: inherit; }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
+
+  .row-flag { display: inline-flex; gap: 2px; }
+
+  /* Custom tooltip for P badges + issue cards */
+  .p-badge, .issue[data-tip] {
+    position: relative;
+    cursor: help;
+  }
+  .p-badge:hover::after,
+  .issue[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+    background: #1a202c;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 400;
+    white-space: normal;
+    width: 260px;
+    text-align: left;
+    line-height: 1.4;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+  }
+  .p-badge:hover::before,
+  .issue[data-tip]:hover::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 1px);
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1a202c;
+    z-index: 100;
+    pointer-events: none;
+  }
+  /* Issue cards มี tooltip position ต่างออกไป */
+  .issue[data-tip]:hover::after {
+    width: 300px;
+    font-size: 11.5px;
+  }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>🔍 Whiteshirt Data Visualizer</h1>
+  <p id="subtitle">กำลังโหลด...</p>
+</header>
+<div class="container">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const STATE = {
+  data: null,
+  view: 'overview',
+  search: '',
+  filters: {},
+  issueFilter: null,
+  page: 1,
+  pageSize: 50,
+};
+
+// ค่าที่ไม่สามารถ derive จาก data.json ได้โดยตรง — แก้ที่เดียวตรงนี้
+const STATS_OVERRIDE = {
+  fixed: 10,
+  needEvidence: 2,
+};
+
+const ISSUE_SUMMARY = [
+  { id:'P1',  level:'',     t:'DAILY_ACCOUNT ขาด 1 row',   d:'39/40 rows — Slot 7 วันที่ 23' },
+  { id:'P2',  level:'',     t:'Comment ID ชนกัน',           d:'IC-0012 duplicated; IC-0013 missing in 1..100' },
+  { id:'P3',  level:'',     t:'Test Group mismatch',        d:'50 rows Core↔Advanced (จาก FIX_LOG)' },
+  { id:'P4',  level:'',     t:'Direct-sell หลุด QC',        d:'3 rows flagged (Fix: restore formula + keyword check)' },
+  { id:'P5',  level:'warn', t:'Image Fit ว่าง',             d:'83/100 rows blank (Info only: N1)' },
+  { id:'P6',  level:'warn', t:'Visibility เปลี่ยน',         d:'28 transitions, 18 Visible→Missing (Info only: N3)' },
+  { id:'P7',  level:'',     t:'Slot 1,6 visibility 0%',     d:'8 slot-days across 4 days (Info only: N5)' },
+  { id:'P8',  level:'warn', t:'Reply Owner = "0"',          d:'IC-0044 — formula chain VLOOKUP+IFERROR' },
+  { id:'P9',  level:'warn', t:'Cart Status ว่าง',           d:'100 rows blank in COMMENT_EXECUTION (Info only: N2)' },
+  { id:'P10', level:'info', t:'Completeness ขัดแย้ง',       d:'2026-07-22 Actual 24 < Required 25' },
+  { id:'P11', level:'warn', t:'Linked Row ผิด',             d:'EVIDENCE_INDEX row 44: 45→44 (off-by-one)' },
+  { id:'P12', level:'info', t:'Product Clicks ไม่ตรง',      d:'DAILY_BRAND row 8: 242 vs input 237' },
+];
+
+const ISSUE_DESCRIPTIONS = {
+  P1:  'DAILY_ACCOUNT ขาด 1 row — ตรวจว่ามี 10 slot ครบทุกวันไหม (39/40 rows)',
+  P2:  'Comment ID ชนกัน — ตรวจ IC-0012 ซ้ำ และ IC-0013 หายไปในลำดับ 1..100',
+  P3:  'Test Group mismatch — เทียบ Test Group ระหว่าง COMMENT_EXECUTION กับ DAILY_ACCOUNT ของ account+วันเดียวกัน',
+  P4:  'Direct-sell หลุด QC — ตรวจ QC Exception Flag ของ comment ที่มีคำขายตรง (ซื้อเลย, โปรแรง, ทักด่วน ฯลฯ)',
+  P5:  'Image Fit ว่าง — ตรวจ Image Fit To Context ที่ยังไม่ได้ประเมิน (N/A)',
+  P6:  'Visibility เปลี่ยน — เทียบผล 30m กับ 24h ว่าต่างกันไหม (signal ของ shadowban)',
+  P7:  'Slot 1,6 visibility 0% — ตรวจ Account Slot 1 และ 6 ที่ Visible Comment Count = 0 ตลอด 4 วัน',
+  P8:  'Reply Owner = "0" — ตรวจ VLOOKUP chain ของ IC-0044 ที่ได้ค่า 0 จาก Excel cache',
+  P9:  'Cart Status ว่าง — ตรวจ Cart Status ที่ไม่มี source field ใน COMMENT_EXECUTION',
+  P10: 'Completeness ขัดแย้ง — ตรวจ Required vs Actual Rows ที่ไม่ตรงกันใน COMPLETENESS_CHECK',
+  P11: 'Linked Row ผิด off-by-one — ตรวจ Linked Row ใน EVIDENCE_INDEX ที่ชี้ผิดแถว (45 ควรเป็น 44)',
+  P12: 'Product Clicks ไม่ตรง — เทียบ DAILY_BRAND กับ input brand_snapshot (242 vs 237)',
+};
+
+const ISSUE_MARKS = {
+  DAILY_ACCOUNT: {
+    P1: { 'Date': '2026-07-23', 'Comment Account': 'Account Slot 7' },
+    P3: r => ['Core','Advanced'].includes(String(r['Test Group'] ?? '').trim()),
+    P7: r => ['Account Slot 1','Account Slot 6'].includes(String(r['Comment Account'] ?? '')),
+    P9: r => String(r['Cart Status'] ?? '').trim() === 'N/A',
+  },
+  COMMENT_EXECUTION: {
+    P2: { 'Comment ID': 'IC-0012' },
+    P4: [ {'Comment ID':'IC-0027'}, {'Comment ID':'IC-0071'}, {'Comment ID':'IC-0088'} ],
+    P5: r => String(r['Image Fit To Context'] ?? '').trim() === 'N/A',
+    P8: { 'Comment ID': 'IC-0044' },
+    P9: r => String(r['Cart Status'] ?? '').trim() === 'N/A',
+  },
+  COMMENT_RECHECK: {
+    P6: r => window.P6_IDS && window.P6_IDS.has(String(r['Comment ID'] ?? '')),
+  },
+  EVIDENCE_INDEX: { P11: { 'Evidence ID': 'EVD-SYN-0040-POST' } },
+  DAILY_BRAND:    { P12: { 'Date': '2026-07-24' } },
+  COMPLETENESS_CHECK: {
+    P10: r => {
+      const a = r['Actual Rows'];
+      if (typeof a === 'string' && a.startsWith('=')) return true;
+      return Number(a) !== Number(r['Required Rows']);
+    },
+  },
+};
+
+const FILTER_COLS = {
+  DAILY_ACCOUNT:     ['Comment Account', 'Account Group', 'Test Group', 'Account Action Status'],
+  DAILY_BRAND:       ['Brand Account Action Status', 'Brand Organic Activity'],
+  COMMENT_EXECUTION: ['Comment Account', 'Creator Category', 'Comment Placement',
+                      'Send Status', '24h Visibility', 'Test Group',
+                      'Image Fit To Context', 'Reply Owner Type', 'QC Exception Flag'],
+  COMMENT_RECHECK:   ['Comment Account', 'Verification Timepoint', 'Recheck Result',
+                      'Matched Reply Owner Type'],
+  EVIDENCE_INDEX:    ['Entity Type', 'Capture Type', 'Timepoint', 'Linked Sheet'],
+  COMPLETENESS_CHECK:['Entity Scope', 'QC Result'],
+  PRODUCT_BANK:      ['Category', 'Priority', 'Hero Product Tier'],
+  KEYWORD_BANK:      ['Language', 'Keyword Group', 'Search Intent'],
+  COMMENT_ANGLE_BANK:['Message Type', 'Risk Level'],
+  SYSTEM_PROGRESS_ROADMAP: ['Readiness'],
+  FIX_LOG:           ['Fix_ID', 'Sheet'],
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function debounce(fn, ms) {
+  let t;
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+function rowMatchesSearch(rec, cols, q) {
+  if (!q) return true;
+  const needle = q.trim().toLowerCase();
+  if (!needle) return true;
+  for (const c of cols) {
+    const v = rec[c];
+    if (v !== null && v !== undefined && String(v).toLowerCase().includes(needle)) return true;
+  }
+  return false;
+}
+
+function rowMatchesFilters(rec, filters) {
+  for (const [col, vals] of Object.entries(filters)) {
+    if (!vals || vals.length === 0) continue;
+    const v = rec[col] === null || rec[col] === undefined ? '' : String(rec[col]);
+    if (!vals.includes(v)) return false;
+  }
+  return true;
+}
+
+function isFlaggedRow(sheet, rec) {
+  const marks = ISSUE_MARKS[sheet];
+  if (!marks) return [];
+  const hits = [];
+  for (const [pid, spec] of Object.entries(marks)) {
+    const specs = Array.isArray(spec) ? spec : [spec];
+    let matched = false;
+    for (const s of specs) {
+      if (typeof s === 'function') {
+        try { if (s(rec)) { matched = true; break; } } catch (_) {}
+      } else {
+        let m = true;
+        for (const [k, v] of Object.entries(s)) {
+          if (String(rec[k]) !== String(v)) { m = false; break; }
+        }
+        if (m) { matched = true; break; }
+      }
+    }
+    if (matched) hits.push(pid);
+  }
+  return hits;
+}
+
+function badgeFor(col, val) {
+  if (val === null || val === undefined || val === '') return '<span class="badge b-gray">—</span>';
+  const v = String(val);
+  if (col.includes('QC') || col === 'QC Exception Flag') {
+    if (v === 'Review' || v.includes('"Review"')) return `<span class="badge b-review">Review</span>`;
+    if (v === 'OK' || v.includes('"OK"')) return `<span class="badge b-ok">OK</span>`;
+    if (v.startsWith('=IF')) return `<span class="badge b-fit" title="${esc(v)}">ƒx</span>`;
+  }
+  if (col === 'Image Fit To Context') {
+    if (v === 'Fit') return `<span class="badge b-fit">Fit</span>`;
+    if (v === 'Not Fit') return `<span class="badge b-review">Not Fit</span>`;
+  }
+  if (col === '24h Visibility' || col === 'Recheck Result') {
+    if (v === 'Visible')      return `<span class="badge b-ok">Visible</span>`;
+    if (v === 'Missing')      return `<span class="badge b-review">Missing</span>`;
+    if (v === 'Inconclusive') return `<span class="badge b-warn">Inconcl.</span>`;
+  }
+  if (col === 'Send Status') return `<span class="badge b-ok">${esc(v)}</span>`;
+  if (col === 'Test Group') {
+    if (v === 'Core')     return `<span class="badge b-fit">Core</span>`;
+    if (v === 'Advanced') return `<span class="badge b-warn">Advanced</span>`;
+  }
+  if (col === 'Reply Owner Type') {
+    if (v === 'User')    return `<span class="badge b-ok">User</span>`;
+    if (v === 'Creator') return `<span class="badge b-warn">Creator</span>`;
+    if (v === 'Mixed')   return `<span class="badge b-warn">Mixed</span>`;
+  }
+  return esc(v);
+}
+
+// ============================================================
+// STATS (derive จาก data จริง)
+// ============================================================
+function computeStats() {
+  const s = STATE.data.sheets;
+  const totalRows = Object.values(s).reduce((a, x) => a + x.row_count, 0);
+  const fixLogRows = s.FIX_LOG ? s.FIX_LOG.row_count : 0;
+  return {
+    sheets: Object.keys(s).length,
+    totalRows,
+    issues: ISSUE_SUMMARY.length,
+    fixed: STATS_OVERRIDE.fixed,
+    needEvidence: STATS_OVERRIDE.needEvidence,
+    fixLogEntries: fixLogRows,
+  };
+}
+
+// ============================================================
+// VIEWS
+// ============================================================
+function renderOverview() {
+  const s = STATE.data.sheets;
+  const st = computeStats();
+  return `
+    <div class="stats">
+      <div class="stat"><div class="n">${st.sheets}</div><div class="l">Sheets</div></div>
+      <div class="stat"><div class="n">${st.totalRows}</div><div class="l">Total Rows</div></div>
+      <div class="stat"><div class="n">${st.issues}</div><div class="l">Issues Found</div></div>
+      <div class="stat"><div class="n">${st.fixed}</div><div class="l">Fixed</div></div>
+      <div class="stat"><div class="n">${st.needEvidence}</div><div class="l">Need Evidence</div></div>
+      <div class="stat"><div class="n">${st.fixLogEntries}</div><div class="l">Fix Log Entries</div></div>
+    </div>
+    <h2 style="font-size:15px;margin:0 0 10px">Issues Overview — คลิกเพื่อดู row ที่ flag</h2>
+    <div class="issues">
+      ${ISSUE_SUMMARY.map(i => {
+        const hasMap = Object.keys(ISSUE_MARKS).some(sh => ISSUE_MARKS[sh][i.id]);
+        return `
+          <div class="issue ${i.level} ${hasMap ? '' : 'no-map'}" data-issue="${i.id}" data-has-map="${hasMap}" data-tip="${(ISSUE_DESCRIPTIONS[i.id]||'').replace(/"/g,'&quot;')}" title="${(ISSUE_DESCRIPTIONS[i.id]||'').replace(/"/g,'&quot;')}">
+            <h4>${i.id} — ${i.t}</h4>
+            <p>${i.d}</p>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <h2 style="font-size:15px;margin:20px 0 10px">Sheets</h2>
+    <table>
+      <thead><tr><th>Sheet</th><th>Rows</th><th>Columns</th><th>Flagged</th></tr></thead>
+      <tbody>
+        ${Object.entries(s).map(([name, d]) => {
+          const flagged = d.records.filter(r => isFlaggedRow(name, r).length > 0).length;
+          return `<tr>
+            <td><b>${esc(name)}</b></td>
+            <td>${d.row_count}</td>
+            <td>${d.headers.length}</td>
+            <td>${flagged ? `<span class="badge b-review">${flagged}</span>` : ''}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function currentFilters(sheet) {
+  return STATE.filters[sheet] || {};
+}
+
+function applyFilters(records, sheet) {
+  const cols = STATE.data.sheets[sheet].headers;
+  let rows = records.filter(r => rowMatchesSearch(r, cols, STATE.search));
+  rows = rows.filter(r => rowMatchesFilters(r, currentFilters(sheet)));
+  if (STATE.issueFilter) {
+    rows = rows.filter(r => isFlaggedRow(sheet, r).includes(STATE.issueFilter));
+  }
+  return rows;
+}
+
+function renderToolbar(sheet) {
+  const cols = FILTER_COLS[sheet] || [];
+  const sheetRecs = STATE.data.sheets[sheet].records;
+  const filters = currentFilters(sheet);
+
+  const activeTags = [];
+  for (const [col, vals] of Object.entries(filters)) {
+    if (vals && vals.length) {
+      activeTags.push(`<span class="filter-tag">${esc(col)}: ${vals.map(esc).join(', ')}
+        <button data-remove-filter="${esc(col)}">×</button></span>`);
+    }
+  }
+
+  return `
+    <div class="toolbar">
+      <input type="search" id="search-input" placeholder="ค้นหาในทุกคอลัมน์..." value="${esc(STATE.search)}">
+      ${cols.map(col => {
+        const uniq = [...new Set(sheetRecs.map(r => r[col] === null || r[col] === undefined ? '' : String(r[col])))]
+                       .filter(v => v && v.length < 40)
+                       .sort();
+        const cur = filters[col] || [];
+        return `<select data-filter-col="${esc(col)}">
+          <option value="">${esc(col)}: ทั้งหมด</option>
+          ${uniq.map(v => `<option value="${esc(v)}" ${cur.includes(v) ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+        </select>`;
+      }).join('')}
+      ${activeTags.length ? `<button class="clear-filters" id="clear-filters">ล้างทั้งหมด</button>` : ''}
+    </div>
+  `;
+}
+
+function renderInfoLine(sheet, filteredCount, totalCount) {
+  return `<p class="info-line">
+    แสดง <b>${filteredCount}</b> / ${totalCount} rows
+    ${STATE.issueFilter ? `• กรองเฉพาะ issue <b>${STATE.issueFilter}</b>` : ''}
+  </p>`;
+}
+
+function renderTable(sheet, rows) {
+  const cols = STATE.data.sheets[sheet].headers.slice(0, 20);
+  const start = (STATE.page - 1) * STATE.pageSize;
+  const pageRows = rows.slice(start, start + STATE.pageSize);
+
+  const body = pageRows.map(r => {
+    const hits = isFlaggedRow(sheet, r);
+    return `<tr>
+      <td>${r._row}</td>
+      <td>${hits.length ? `<span class="row-flag">${hits.map(h => {
+          const tip = (ISSUE_DESCRIPTIONS[h] || '').replace(/"/g,'&quot;');
+          return `<span class="badge b-review p-badge" data-tip="${tip}" title="${tip}">${h}</span>`;
+        }).join('')}</span>` : ''}</td>
+      ${cols.map(c => {
+        const v = r[c];
+        const full = v === null || v === undefined ? '' : String(v);
+        const cell = badgeFor(c, v);
+        const isBadge = cell !== esc(full);
+        const trunc = full.length > 60 ? full.slice(0, 60) + '…' : full;
+        const title = full.length > 60 ? ` title="${esc(full)}"` : '';
+        return `<td class="truncate"${title}>${isBadge ? cell : esc(trunc)}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+
+  return `
+    <table id="data-table">
+      <thead><tr>
+        <th>Row</th><th>Flag</th>
+        ${cols.map(c => `<th>${esc(c)}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${body || `<tr><td colspan="${cols.length + 2}" class="empty">ไม่พบข้อมูล</td></tr>`}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderPagination(rowsLength) {
+  const pages = Math.max(1, Math.ceil(rowsLength / STATE.pageSize));
+  if (pages <= 1) return '';
+  return `
+    <div class="pagination">
+      <button id="prev-page" ${STATE.page === 1 ? 'disabled' : ''}>← ก่อนหน้า</button>
+      <span>หน้า ${STATE.page} / ${pages}</span>
+      <button id="next-page" ${STATE.page === pages ? 'disabled' : ''}>ถัดไป →</button>
+    </div>
+  `;
+}
+
+function renderSheet(sheet) {
+  const s = STATE.data.sheets[sheet];
+  if (!s) return '<div class="empty">ไม่พบ sheet</div>';
+  const rows = applyFilters(s.records, sheet);
+  return `
+    <h2 style="font-size:15px;margin:0 0 10px">${esc(sheet)}</h2>
+    <p style="font-size:12px;color:#718096;margin:0 0 10px">
+      ${s.row_count} rows • ${s.headers.length} columns
+    </p>
+    ${renderToolbar(sheet)}
+    ${renderInfoLine(sheet, rows.length, s.records.length)}
+    ${renderTable(sheet, rows)}
+    ${renderPagination(rows.length)}
+  `;
+}
+
+// ============================================================
+// RENDER / REFRESH
+// ============================================================
+function render(view) {
+  STATE.view = view;
+  const main = document.getElementById('main');
+  if (view === 'overview') {
+    main.innerHTML = renderOverview();
+    main.querySelectorAll('.issue').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.issue;
+        for (const sheetName of Object.keys(ISSUE_MARKS)) {
+          if (ISSUE_MARKS[sheetName][id]) {
+            STATE.issueFilter = id;
+            STATE.page = 1;
+            goto(sheetName);
+            return;
+          }
+        }
+        // ไม่มี mapping — ไม่ navigate แต่แจ้งเตือนเบา ๆ
+        // (ไม่ใช้ alert() เพื่อไม่ให้กวนตอน screenshot)
+        el.classList.add('no-map');
+      });
+    });
+  } else {
+    main.innerHTML = renderSheet(view);
+    attachSheetEvents(view);
+  }
+  document.querySelectorAll('nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+}
+
+// refresh เฉพาะส่วนที่เปลี่ยน — ใช้ตอน filter / pagination / clear
+function refreshSheetView(sheet) {
+  const main = document.getElementById('main');
+  const s = STATE.data.sheets[sheet];
+  const rows = applyFilters(s.records, sheet);
+
+  const toolbar = main.querySelector('.toolbar');
+  if (toolbar) toolbar.outerHTML = renderToolbar(sheet);
+
+  const info = main.querySelector('.info-line');
+  if (info) info.outerHTML = renderInfoLine(sheet, rows.length, s.records.length);
+
+  const table = main.querySelector('#data-table');
+  if (table) table.outerHTML = renderTable(sheet, rows);
+
+  const pag = main.querySelector('.pagination');
+  if (pag) pag.remove();
+  const newPag = renderPagination(rows.length);
+  if (newPag) main.insertAdjacentHTML('beforeend', newPag);
+
+  attachSheetEvents(sheet);
+}
+
+// search — update เฉพาะ info + table + pagination โดยไม่แตะ toolbar
+function refreshSearchResults(sheet) {
+  const main = document.getElementById('main');
+  const s = STATE.data.sheets[sheet];
+  const rows = applyFilters(s.records, sheet);
+
+  const info = main.querySelector('.info-line');
+  if (info) info.outerHTML = renderInfoLine(sheet, rows.length, s.records.length);
+
+  const table = main.querySelector('#data-table');
+  if (table) table.outerHTML = renderTable(sheet, rows);
+
+  const pag = main.querySelector('.pagination');
+  if (pag) pag.remove();
+  const newPag = renderPagination(rows.length);
+  if (newPag) main.insertAdjacentHTML('beforeend', newPag);
+
+  attachTableEvents(sheet);
+}
+
+function attachTableEvents(sheet) {
+  const main = document.getElementById('main');
+  const prev = main.querySelector('#prev-page');
+  if (prev) prev.addEventListener('click', () => { STATE.page--; refreshSheetView(sheet); });
+  const next = main.querySelector('#next-page');
+  if (next) next.addEventListener('click', () => { STATE.page++; refreshSheetView(sheet); });
+}
+
+function attachSheetEvents(sheet) {
+  const main = document.getElementById('main');
+
+  const si = main.querySelector('#search-input');
+  if (si && !si.dataset.bound) {
+    si.dataset.bound = '1';
+    si.addEventListener('input', debounce(e => {
+      STATE.search = e.target.value;
+      STATE.page = 1;
+      refreshSearchResults(sheet);
+    }, 180));
+  }
+
+  main.querySelectorAll('select[data-filter-col]').forEach(sel => {
+    sel.addEventListener('change', e => {
+      const col = sel.dataset.filterCol;
+      const val = e.target.value;
+      if (!STATE.filters[sheet]) STATE.filters[sheet] = {};
+      STATE.filters[sheet][col] = val ? [val] : [];
+      STATE.page = 1;
+      refreshSheetView(sheet);
+    });
+  });
+
+  main.querySelectorAll('[data-remove-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const col = btn.dataset.removeFilter;
+      if (STATE.filters[sheet]) delete STATE.filters[sheet][col];
+      STATE.page = 1;
+      refreshSheetView(sheet);
+    });
+  });
+
+  const cf = main.querySelector('#clear-filters');
+  if (cf) cf.addEventListener('click', () => {
+    STATE.filters[sheet] = {};
+    STATE.search = '';
+    STATE.issueFilter = null;
+    STATE.page = 1;
+    refreshSheetView(sheet);
+  });
+
+  attachTableEvents(sheet);
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function buildNav() {
+  const nav = document.getElementById('nav');
+  let html = `<h3>Overview</h3>
+    <button data-view="overview">📊 Dashboard</button>
+    <h3>Sheets</h3>`;
+  for (const [name, d] of Object.entries(STATE.data.sheets)) {
+    html += `<button data-view="${esc(name)}">${esc(name)}<span class="count">${d.row_count}</span></button>`;
+  }
+  nav.innerHTML = html;
+  nav.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      STATE.search = '';
+      STATE.filters = {};
+      STATE.issueFilter = null;
+      STATE.page = 1;
+      render(b.dataset.view);
+    });
+  });
+}
+
+function goto(view) {
+  STATE.page = 1;
+  render(view);
+  document.querySelectorAll('nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+fetch('./data.json')
+  .then(r => r.json())
+  .then(d => {
+    STATE.data = d;
+
+    // P6_IDS: Comment ID ที่ผล 30m ≠ 24h (transitions)
+    window.P6_IDS = new Set();
+    try {
+      const recs = (d.sheets.COMMENT_RECHECK && d.sheets.COMMENT_RECHECK.records) || [];
+      const byId = {};
+      for (const r of recs) {
+        const cid = String(r['Comment ID'] ?? '');
+        const tp  = String(r['Verification Timepoint'] ?? '');
+        if (!cid || !tp) continue;
+        byId[cid] = byId[cid] || {};
+        byId[cid][tp] = String(r['Recheck Result'] ?? '');
+      }
+      for (const [cid, pair] of Object.entries(byId)) {
+        if (pair['30m'] !== pair['24h']) window.P6_IDS.add(cid);
+      }
+      console.log('[P6] transition IDs:', window.P6_IDS.size);
+    } catch (e) { console.warn('P6 init failed', e); }
+    const st = computeStats();
+    document.getElementById('subtitle').textContent =
+      `${st.sheets} sheets • ${st.totalRows} rows • ${d.generated_at}`;
+    buildNav();
+    render('overview');
+  })
+  .catch(e => {
+    document.getElementById('main').innerHTML = `
+      <div class="empty">
+        โหลด data.json ไม่ได้: ${esc(e.message)}<br><br>
+        รัน: <code>python3 scripts/export_to_json.py</code><br>
+        แล้วรัน: <code>python3 -m http.server 8765</code> ใน <code>outputs/</code>
+      </div>`;
+  });
+</script>
+</body>
+</html>

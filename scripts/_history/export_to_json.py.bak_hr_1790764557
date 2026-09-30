@@ -112,18 +112,12 @@ def main():
     fx_counts = Counter()
     total_fx = 0
 
-    # sheet ที่ใช้ header row ต่างจาก default (default = 4)
-    HEADER_ROW_OVERRIDES = {
-        'FIX_LOG': 1,
-    }
-
     for name in wb.sheetnames:
         if name == 'README_START_HERE':
             continue
         ws = wb[name]
         ws_c = wb_cached[name]
-        hr = HEADER_ROW_OVERRIDES.get(name, HEADER_ROW)
-        headers, records = sheet_to_records(ws, ws_c, header_row=hr)
+        headers, records = sheet_to_records(ws, ws_c)
 
         # นับ [fx] ต่อ sheet
         n_fx = 0

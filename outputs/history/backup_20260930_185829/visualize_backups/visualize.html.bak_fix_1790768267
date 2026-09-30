@@ -318,9 +318,7 @@
         background: #fed7d7;
         color: #742a2a;
       }
-    
-  .ev-input { color: #2b6cb0; font-weight: 600; background: #ebf8ff; padding: 0 3px; border-radius: 3px; }
-  .ev-before {
+      .ev-before {
         color: #718096;
         text-decoration: line-through;
         text-decoration-color: #e53e3e;
@@ -1107,54 +1105,7 @@
         },
       };
 
-      const KEY_COLS = {
-  DAILY_ACCOUNT:           ["Date", "Comment Account"],
-  DAILY_BRAND:             ["Date"],
-  COMMENT_EXECUTION:       ["Comment ID"],
-  COMMENT_RECHECK:         ["Comment ID", "Verification Timepoint"],
-  EVIDENCE_INDEX:          ["Evidence ID"],
-  COMPLETENESS_CHECK:      ["Date"],
-  SYSTEM_PROGRESS_ROADMAP: ["System Area"],
-  PRODUCT_BANK:            ["Product ID"],
-  KEYWORD_BANK:            ["Keyword ID"],
-  COMMENT_ANGLE_BANK:      ["Angle ID"],
-  FIX_LOG:                 ["Fix_ID", "Row", "Column_Name"],
-};
-
-function rowKey(sheet, r) {
-  const cols = KEY_COLS[sheet];
-  if (!cols) return null;
-  const parts = cols.map((c) => String(r[c] == null ? "" : r[c]).trim().slice(0, 30));
-  if (parts.every((p) => !p)) return null;
-  return parts.join("||");
-}
-
-
-function getInputRow(sheetName, currentRow) {
-  if (!window.INPUT_DATA) return null;
-  const s = window.INPUT_DATA.sheets[sheetName];
-  if (!s) return null;
-  const k = rowKey(sheetName, currentRow);
-  if (k) {
-    const hit = s.records.find((o) => rowKey(sheetName, o) === k);
-    if (hit) return hit;
-  }
-  return null;
-}
-
-function getBeforeRow(sheetName, currentRow) {
-  if (!window.BEFORE_DATA) return null;
-  const s = window.BEFORE_DATA.sheets[sheetName];
-  if (!s) return null;
-  const k = rowKey(sheetName, currentRow);
-  if (k) {
-    const hit = s.records.find((o) => rowKey(sheetName, o) === k);
-    if (hit) return hit;
-  }
-  return s.records.find((o) => o._row === currentRow._row) || null;
-}
-
-function getEvidenceColumns(sheetName) {
+      function getEvidenceColumns(sheetName) {
         const marks =
           (typeof ISSUE_MARKS !== "undefined" && ISSUE_MARKS[sheetName]) || {};
         const pids = Object.keys(marks);
@@ -1712,22 +1663,27 @@ function getEvidenceColumns(sheetName) {
         .map((c) => {
           const flagged = hits.includes(c.pid);
           const rule = EVIDENCE_RULES[c.pid] || {};
-          const br = getBeforeRow(sheet, r);
-          const ir = getInputRow(sheet, r);
+          const br =
+            window.BEFORE_DATA && window.BEFORE_DATA.sheets[sheet]
+              ? window.BEFORE_DATA.sheets[sheet].records.find(
+                  (o) => o._row === r._row,
+                )
+              : null;
           let curDisplay = "",
             befDisplay = null,
-            inpDisplay = null,
             cls = "ev-flag-col";
-          const tip = `P${c.pid}: ${rule.condition ||""}`;
+          const tip = `P${c.pid}: ${rule.condition || ""}`;
           try {
-            if (typeof c.computeMatch === "function"){
+            if (typeof c.computeMatch === "function") {
               const curOk = !!c.computeMatch(r, ctx);
-              let befOk = null, inpOk = null;
-              if (br) { try { befOk = !!c.computeMatch(br, ctx); } catch (_) {} }
-              if (ir) { try { inpOk = !!c.computeMatch(ir, ctx); } catch (_) {} }
+              let befOk = null;
+              if (br) {
+                try {
+                  befOk = !!c.computeMatch(br, ctx);
+                } catch (_) {}
+              }
               curDisplay = curOk ? "จริง" : "เท็จ";
               befDisplay = befOk === null ? null : befOk ? "จริง" : "เท็จ";
-              inpDisplay = inpOk === null ? null : inpOk ? "จริง" : "เท็จ";
               cls = curOk ? "ev-match-ok" : "ev-match-fail";
             } else if (typeof c.get === "function") {
               const v = c.get(r, ctx);
@@ -1736,13 +1692,9 @@ function getEvidenceColumns(sheetName) {
                 try {
                   const bv = c.get(br, ctx);
                   befDisplay = bv == null || bv === "" ? "∅" : String(bv);
-                } catch (_) { befDisplay = null; }
-              }
-              if (ir) {
-                try {
-                  const iv = c.get(ir, ctx);
-                  inpDisplay = iv == null || iv === "" ? "∅" : String(iv);
-                } catch (_) { inpDisplay = null; }
+                } catch (_) {
+                  befDisplay = null;
+                }
               }
               if (!flagged) cls = "ev-passive";
             }
@@ -1751,14 +1703,8 @@ function getEvidenceColumns(sheetName) {
             cls = "ev-match-fail";
           }
           let cellHtml;
-          // 3-way: ถ้ามี input → Input → After
-          if (inpDisplay !== null && inpDisplay !== curDisplay) {
-            cellHtml = `<span class="ev-input" title="Input (source of truth)">${esc(inpDisplay)}</span><span class="ev-arrow">→</span><span class="ev-after">${esc(curDisplay)}</span>`;
-          } else if (inpDisplay !== null) {
-            // input ตรงกับ after → แสดงแค่ after
-            cellHtml = esc(curDisplay);
-          } else if (befDisplay !== null && befDisplay !== curDisplay) {
-            cellHtml = `<span class="ev-before" title="Before (sanitized)">${esc(befDisplay)}</span><span class="ev-arrow">→</span><span class="ev-after">${esc(curDisplay)}</span>`;
+          if (befDisplay !== null && befDisplay !== curDisplay) {
+            cellHtml = `<span class="ev-before">${esc(befDisplay)}</span><span class="ev-arrow">→</span><span class="ev-after">${esc(curDisplay)}</span>`;
           } else {
             cellHtml = esc(curDisplay);
           }
@@ -2105,15 +2051,10 @@ function getEvidenceColumns(sheetName) {
         fetch("./data_sanitized.json")
           .then((r) => r.json())
           .catch(() => null),
-        fetch("./data_input.json")
-          .then((r) => r.json())
-          .catch(() => null),
       ])
-        .then(([d, before, input]) => {
+        .then(([d, before]) => {
           STATE.data = d;
           window.BEFORE_DATA = before;
-          window.INPUT_DATA = input;
-          console.log("[INPUT_DATA]", input ? Object.keys(input.sheets).length + " sheets" : "not loaded");
 
           // P6_IDS: Comment ID ที่ผล 30m ≠ 24h (transitions)
           window.P6_IDS = new Set();
