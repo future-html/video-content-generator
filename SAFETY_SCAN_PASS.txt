@@ -1,0 +1,9 @@
+PASS
+Language: TH
+Files scanned: 17
+Symlink/junction: none
+Hidden files: none
+External URL: none except reserved .invalid test URLs
+Absolute path outside workspace: none
+Credential/private-key/email patterns: none
+outputs/: empty
