@@ -1,0 +1,32 @@
+======================================================================
+COMMENT_RECHECK — rows matching 'IC-0044'
+======================================================================
+Excel row 91:
+  CID=IC-0044 | TP='30m'
+  Lookup Key      : formula='=D91&"|"&S91' | cached=None
+  Lookup Owner    : formula='=R91' | cached=None
+Excel row 92:
+  CID=IC-0044 | TP='24h'
+  Lookup Key      : formula='=D92&"|"&S92' | cached=None
+  Lookup Owner    : formula='=R92' | cached=None
+
+======================================================================
+Search: rows where Lookup Key cached == 'IC-0044|24h'
+======================================================================
+  (none — Lookup Key cache may also be gone)
+
+======================================================================
+Lookup Key column — sample formulas (rows 5-8)
+======================================================================
+  row 5 (CID=IC-0001, TP=30m): key_formula='=D5&"|"&S5' | key_cached=None
+  row 6 (CID=IC-0001, TP=24h): key_formula='=D6&"|"&S6' | key_cached=None
+  row 7 (CID=IC-0002, TP=30m): key_formula='=D7&"|"&S7' | key_cached=None
+  row 8 (CID=IC-0002, TP=24h): key_formula='=D8&"|"&S8' | key_cached=None
+
+======================================================================
+Lookup Reply Owner column — sample (rows 5-8)
+======================================================================
+  row 5 (CID=IC-0001, TP=30m): owner_formula='=R5' | owner_cached=None
+  row 6 (CID=IC-0001, TP=24h): owner_formula='=R6' | owner_cached=None
+  row 7 (CID=IC-0002, TP=30m): owner_formula='=R7' | owner_cached=None
+  row 8 (CID=IC-0002, TP=24h): owner_formula='=R8' | owner_cached=None

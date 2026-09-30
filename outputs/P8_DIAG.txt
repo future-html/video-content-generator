@@ -1,0 +1,40 @@
+======================================================================
+COMMENT_EXECUTION row 48 (IC-0044) — column 45 Reply Owner Type
+======================================================================
+Excel row: 48
+Formula: '=IFERROR(VLOOKUP(B48&"|24h",\'COMMENT_RECHECK\'!$V$5:$Y$204,3,FALSE),"")'
+Cached value: None
+B column (Comment ID): 'IC-0044'
+
+======================================================================
+COMMENT_RECHECK — ค้นหา IC-0044 ที่ timepoint 24h
+======================================================================
+
+======================================================================
+COMMENT_RECHECK — header row 4 check
+======================================================================
+  col 1: Recheck Date
+  col 2: Recheck Time
+  col 3: Original Date
+  col 4: Comment ID
+  col 5: Comment Account
+  col 6: Target Video URL
+  col 7: Target Creator
+  col 8: Original 24h Visibility
+  col 9: Recheck Result
+  col 10: Evidence ID
+  col 11: Recheck Note
+  col 12: Action Required
+  col 13: QC Status
+  col 14: Original Comment Text
+  col 15: Matched Comment Text
+  col 16: Matched Reply Count
+  col 17: Matched Reply Preview
+  col 18: Matched Reply Owner Type
+  col 19: Verification Timepoint
+  col 20: Verified User Reply Status
+  col 21: Import Batch ID
+  col 22: Lookup Key
+  col 23: Lookup Result
+  col 24: Lookup Reply Owner
+  col 25: Lookup Verified Status

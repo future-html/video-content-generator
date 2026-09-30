@@ -1,0 +1,66 @@
+EVIDENCE_INDEX column mapping (row 4):
+------------------------------------------------------------
+    A ( 1) : Evidence ID
+    B ( 2) : Evidence Group ID
+    C ( 3) : Date
+    D ( 4) : Entity Type
+    E ( 5) : Entity Reference
+    F ( 6) : Capture Type
+    G ( 7) : Timepoint
+    H ( 8) : Capture Time
+    I ( 9) : Raw Path
+    J (10) : Compressed Path
+    K (11) : Thumbnail Path
+    L (12) : Drive URL
+    M (13) : Compression Status
+    N (14) : Linked Sheet
+    O (15) : Linked Row
+    P (16) : What Screenshot Must Show
+    Q (17) : Notes
+
+Row 44 完整内容:
+------------------------------------------------------------
+  A (Evidence ID): 'EVD-SYN-0040-POST'
+  B (Evidence Group ID): 'EVG-COM-0040'
+  C (Date): datetime.datetime(2026, 7, 22, 0, 0)
+  D (Entity Type): 'Comment'
+  E (Entity Reference): 'IC-0040'
+  F (Capture Type): 'Post confirmation'
+  G (Timepoint): 'Post'
+  H (Capture Time): '18:33'
+  I (Raw Path): 'interview_assets/evidence/EVD-SYN-0040-POST.png'
+  J (Compressed Path): None
+  K (Thumbnail Path): None
+  L (Drive URL): None
+  M (Compression Status): 'Not Required'
+  N (Linked Sheet): 'COMMENT_EXECUTION'
+  O (Linked Row): 44
+  P (What Screenshot Must Show): 'Comment ID, account slot, post confirmation'
+  Q (Notes): 'Synthetic relative path only'
+
+Row 44 data validation:
+------------------------------------------------------------
+
+Row 44 conditional formatting:
+------------------------------------------------------------
+
+EVD-SYN-0040-POST 完整 row:
+------------------------------------------------------------
+  Excel row = 44
+    A (Evidence ID): 'EVD-SYN-0040-POST'
+    B (Evidence Group ID): 'EVG-COM-0040'
+    C (Date): datetime.datetime(2026, 7, 22, 0, 0)
+    D (Entity Type): 'Comment'
+    E (Entity Reference): 'IC-0040'
+    F (Capture Type): 'Post confirmation'
+    G (Timepoint): 'Post'
+    H (Capture Time): '18:33'
+    I (Raw Path): 'interview_assets/evidence/EVD-SYN-0040-POST.png'
+    J (Compressed Path): None
+    K (Thumbnail Path): None
+    L (Drive URL): None
+    M (Compression Status): 'Not Required'
+    N (Linked Sheet): 'COMMENT_EXECUTION'
+    O (Linked Row): 44
+    P (What Screenshot Must Show): 'Comment ID, account slot, post confirmation'
+    Q (Notes): 'Synthetic relative path only'

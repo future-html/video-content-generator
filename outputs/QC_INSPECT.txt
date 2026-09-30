@@ -1,0 +1,25 @@
+QC Exception Flag samples (row 5-10, 16-18, 31-33):
+  row 5 | IC-0001 | QC='=IF(OR(COUNTIF($B$5:$B$104,B5)>1,AND(T5="Posted",BC5<>"Yes"),AND(OR(BJ5="Verifie'
+           text=ลุคคอปกนี้ดูคลีนและใส่ไปทำงานได้จริงเลย ความวิบวับแบบเบา ๆ ใ
+  row 6 | IC-0002 | QC='=IF(OR(COUNTIF($B$5:$B$104,B6)>1,AND(T6="Posted",BC6<>"Yes"),AND(OR(BJ6="Verifie'
+           text=ชอบการแมตช์สูทที่ดูสุภาพแต่ยังมีความแฟชั่นอยู่ค่ะ ลุคนี้ลองเ
+  row 7 | IC-0003 | QC='=IF(OR(COUNTIF($B$5:$B$104,B7)>1,AND(T7="Posted",BC7<>"Yes"),AND(OR(BJ7="Verifie'
+           text=ชอบแนวเสื้อที่ดูเป็นระเบียบและไม่ทำให้ลุคแข็งเกินไป ดีเทลคอเ
+  row 8 | IC-0004 | QC='=IF(OR(COUNTIF($B$5:$B$104,B8)>1,AND(T8="Posted",BC8<>"Yes"),AND(OR(BJ8="Verifie'
+           text=คาดิแกนตัวนี้ดูแมตช์ง่ายและใช้ได้หลายมู้ดมาก ถ้าอยากเปลี่ยนฟ
+  row 9 | IC-0005 | QC='=IF(OR(COUNTIF($B$5:$B$104,B9)>1,AND(T9="Posted",BC9<>"Yes"),AND(OR(BJ9="Verifie'
+           text=เป็นไอเดียแต่งตัวประจำวันที่ดูดีแบบไม่ต้องคิดเยอะค่ะ พอมีตัว
+  row 10 | IC-0006 | QC='=IF(OR(COUNTIF($B$5:$B$104,B10)>1,AND(T10="Posted",BC10<>"Yes"),AND(OR(BJ10="Ver'
+           text=คาดิแกนตัวนี้ดูแมตช์ง่ายและใช้ได้หลายมู้ดมาก ถ้าเติมจุดเล็กต
+  row 16 | IC-0012 | QC='=IF(OR(COUNTIF($B$5:$B$104,B16)>1,AND(T16="Posted",BC16<>"Yes"),AND(OR(BJ16="Ver'
+           text=ซื้อเลย โปรแรงที่สุด คลิกลิงก์ร้านตอนนี้!!!
+  row 17 | IC-0013 | QC='=IF(OR(COUNTIF($B$5:$B$104,B17)>1,AND(T17="Posted",BC17<>"Yes"),AND(OR(BJ17="Ver'
+           text=ชอบความคลีนของเสื้อเชิ้ตลุคนี้ ดูใส่ได้หลายโอกาสเลย จุดเล็ก 
+  row 18 | IC-0014 | QC='=IF(OR(COUNTIF($B$5:$B$104,B18)>1,AND(T18="Posted",BC18<>"Yes"),AND(OR(BJ18="Ver'
+           text=มู้ดของลุคนี้ดูสุภาพแต่ไม่ทำให้ชุดน่าเบื่อเลย ถ้าเติมจุดเล็ก
+  row 31 | IC-0027 | QC='=IF(OR(COUNTIF($B$5:$B$104,B31)>1,AND(T31="Posted",BC31<>"Yes"),AND(OR(BJ31="Ver'
+           text=ร้านเราถูกที่สุด รับประกันไม่พัง 100% ทักด่วน
+  row 32 | IC-0028 | QC='=IF(OR(COUNTIF($B$5:$B$104,B32)>1,AND(T32="Posted",BC32<>"Yes"),AND(OR(BJ32="Ver'
+           text=โทนเข้มแบบนี้ช่วยให้ลุคดูคมและน่าสนใจมาก blazer ทรงนี้ถ้ามีจ
+  row 33 | IC-0029 | QC='=IF(OR(COUNTIF($B$5:$B$104,B33)>1,AND(T33="Posted",BC33<>"Yes"),AND(OR(BJ33="Ver'
+           text=เสื้อคลุมทรงนี้ช่วยให้ชุดดูนุ่มนวลขึ้นพอดีเลย ดีเทลกระดุมดอก

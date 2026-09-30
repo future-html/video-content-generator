@@ -1,0 +1,65 @@
+COMMENT_EXECUTION column mapping:
+----------------------------------------------------------------------
+    A ( 1) : Date
+    B ( 2) : Comment ID
+    C ( 3) : Comment Account
+    D ( 4) : Account Display Name
+    E ( 5) : Post Time
+    F ( 6) : Target Creator
+    G ( 7) : Creator Category
+    H ( 8) : Target Video URL
+    I ( 9) : Video Topic
+    J (10) : Video Publish Time
+    K (11) : Video Views At Posting
+    L (12) : Video Likes At Posting
+    M (13) : Comment Placement
+    N (14) : Reply Target
+    O (15) : Comment Text
+    P (16) : Image Asset ID
+    Q (17) : Image Description
+    R (18) : Context Before Our Comment
+    S (19) : Context After Our Comment
+    T (20) : Send Status
+    U (21) : 24h Visibility
+    V (22) : Raw Reply Count
+    W (23) : Raw Reply Text / Preview
+    X (24) : Self Reply Count
+    Y (25) : Evidence ID
+    Z (26) : Notes
+   AA (27) : Test Group
+   AB (28) : Cart Status
+   AC (29) : Avatar Type
+   AD (30) : Target Country
+   AE (31) : Creator Is Thai
+   AF (32) : Video Type Standard
+   AG (33) : Comment Library ID
+   AH (34) : Comment Language
+   AI (35) : Comment Type Standard
+   AJ (36) : Image Type Standard
+   AK (37) : Image Raw Path
+   AL (38) : Image Shared Path
+   AM (39) : Image File Returned
+   AN (40) : AI Image Analysis Status
+   AO (41) : User Reply Mark (Legacy)
+   AP (42) : User Purchase Intent Mark
+   AQ (43) : Follow-up Status
+   AR (44) : Image Fit To Context
+   AS (45) : Reply Owner Type
+   AT (46) : Account Instance ID
+   AU (47) : Account Username
+   AV (48) : Device ID
+   AW (49) : Task ID
+   AX (50) : Attempt ID
+   AY (51) : Posting Method
+   AZ (52) : Attempt Start Time
+   BA (53) : Attempt End Time
+   BB (54) : Session Valid
+   BC (55) : Post Confirmed
+   BD (56) : Failure Code
+   BE (57) : Failure Reason
+   BF (58) : CAPTCHA Detected
+   BG (59) : Reauth Required
+   BH (60) : Retry Count
+   BI (61) : Latest Verify Timepoint
+   BJ (62) : Verified User Reply Status
+   BK (63) : QC Exception Flag

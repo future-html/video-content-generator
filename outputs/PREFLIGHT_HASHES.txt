@@ -1,2 +1,15 @@
+=== PREFLIGHT HASHES @ 2026-09-30T07:12:39Z ===
+
+--- ORIGINAL ---
 c6883eba89b589a976603501c53cab056651575710d8fb467cbfd2f5d7c91240  whiteshirt_interview_master_SANITIZED.xlsx
+
+--- INPUTS ---
+72deb878fa04fe1080b90fadb4a11373c38805f662da0bf26ac798b26d891ab8  inputs/brand_snapshot_import_SYNTHETIC.xlsx
+9f56d2d6415867d5521a5ca08eca69c1cd84b3446e765f791b7087e7c6ce01d0  inputs/daily_account_import_SYNTHETIC.xlsx
+10b30143aae070c762573b0977439e2d189e88f40809abdadfbccc4bf0b1d3c2  inputs/verify_24h_import_SYNTHETIC.csv
+95bb58a2613fc257e939d312d57ccac25be1b3cc23ae1d7b5787fd16c2f4957b  inputs/verify_30m_import_SYNTHETIC.csv
+
+--- WORKING ---
 c6883eba89b589a976603501c53cab056651575710d8fb467cbfd2f5d7c91240  outputs/whiteshirt_interview_master_WORKING.xlsx
+
+--- CWD: /Users/futurefwd2000/Downloads/candidate_workspace/video-content-generator ---

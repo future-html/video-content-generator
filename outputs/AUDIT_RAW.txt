@@ -1,0 +1,103 @@
+====================================================================================================
+S1 DAILY_ACCOUNT
+====================================================================================================
+rows=39
+Date
+2026-07-21    10
+2026-07-22    10
+2026-07-23     9
+2026-07-24    10
+
+--- P1: rows 2026-07-23 ---
+      Date Comment Account Account Group Test Group  Comment Count Today  Visible Comment Count Today
+2026-07-23  Account Slot 1             A       Core                    3                            0
+2026-07-23  Account Slot 2             A       Core                    3                            3
+2026-07-23  Account Slot 3             A       Core                    3                            2
+2026-07-23  Account Slot 4             A       Core                    3                            3
+2026-07-23  Account Slot 5             A       Core                    3                            3
+2026-07-23  Account Slot 6             B   Advanced                    2                            0
+2026-07-23  Account Slot 8             B   Advanced                    2                            2
+2026-07-23  Account Slot 9             B   Advanced                    2                            2
+2026-07-23 Account Slot 10             B   Advanced                    2                            2
+  pandas idx=20 | Excel row=25 | Account Slot 1
+  pandas idx=21 | Excel row=26 | Account Slot 2
+  pandas idx=22 | Excel row=27 | Account Slot 3
+  pandas idx=23 | Excel row=28 | Account Slot 4
+  pandas idx=24 | Excel row=29 | Account Slot 5
+  pandas idx=25 | Excel row=30 | Account Slot 6
+  pandas idx=26 | Excel row=31 | Account Slot 8
+  pandas idx=27 | Excel row=32 | Account Slot 9
+  pandas idx=28 | Excel row=33 | Account Slot 10
+
+====================================================================================================
+S2 DAILY_BRAND
+====================================================================================================
+      Date  Product Clicks  Add to Cart  Orders  GMV
+2026-07-21             210           24       4 3200
+2026-07-22             219           25       5 3610
+2026-07-23             228           26       6 4020
+2026-07-24             242           27       7 4430
+
+====================================================================================================
+S3 COMMENT_EXECUTION
+====================================================================================================
+rows=100 | unique ID=99
+Dup IDs: ['IC-0012', 'IC-0012']
+
+QC Flag: {'OK': 97, 'Review': 3}
+Image Fit: {nan: 83, 'Fit': 17}
+Reply Owner: {nan: 72, 'User': 11, 'Creator': 10, 'Mixed': 6, 0: 1}
+Cart Status: {nan: 100}
+
+--- P2: IC-0012 rows ---
+  pandas idx=11 | Excel row=16 | Account Slot 2 | ซื้อเลย โปรแรงที่สุด คลิกลิงก์ร้านตอนนี้!!!
+  pandas idx=12 | Excel row=17 | Account Slot 3 | ชอบความคลีนของเสื้อเชิ้ตลุคนี้ ดูใส่ได้หลายโอกาสเลย จุดเล็ก 
+
+Missing IDs in 1..100: ['IC-0013']
+
+--- P4: Direct-sell keyword + QC flag ---
+Comment ID Comment Account                                  Comment Text QC Exception Flag                            hit
+   IC-0012  Account Slot 2   ซื้อเลย โปรแรงที่สุด คลิกลิงก์ร้านตอนนี้!!!            Review [ซื้อเลย, ลิงก์, โปรแรง, คลิก]
+   IC-0027  Account Slot 7 ร้านเราถูกที่สุด รับประกันไม่พัง 100% ทักด่วน                OK                      [ทักด่วน]
+   IC-0071  Account Slot 1        สนใจสินค้าทักแชตทันที ส่งฟรีทุกออเดอร์                OK               [ทักแชต, ส่งฟรี]
+   IC-0088  Account Slot 8        ลิงก์หน้าโปรไฟล์ ลดราคา รีบซื้อก่อนหมด                OK       [ลิงก์, ลดราคา, รีบซื้อ]
+
+--- P4b: QC Flag = Review ---
+Comment ID Comment Account                                                                                                        Comment Text
+   IC-0012  Account Slot 2                                                                         ซื้อเลย โปรแรงที่สุด คลิกลิงก์ร้านตอนนี้!!!
+   IC-0012  Account Slot 3 ชอบความคลีนของเสื้อเชิ้ตลุคนี้ ดูใส่ได้หลายโอกาสเลย จุดเล็ก ๆ โทนชมพูแบบในรูปทำให้เสื้อขาวดูละมุนและแต่งสนุกขึ้นมาก
+   IC-0031  Account Slot 1     เสื้อไหมพรมลุคนี้ดูเรียบแต่มีเสน่ห์ดีค่ะ รายละเอียดเล็กตรงกระดุมแบบในรูปช่วยดึงสายตาให้ช่วงบนดูมีมิติมากขึ้นค่ะ
+
+====================================================================================================
+S4 COMMENT_RECHECK
+====================================================================================================
+rows=200
+change
+Visible -> Visible         69
+Visible -> Missing         18
+Missing -> Visible          9
+Missing -> Missing          3
+Missing -> Inconclusive     1
+
+====================================================================================================
+S5 EVIDENCE_INDEX
+====================================================================================================
+rows=144
+Capture Type
+Post confirmation    100
+Profile snapshot      40
+Brand snapshot         4
+Drive URL non-null: 0
+
+--- P11: EVIDENCE linked_row mismatch ---
+      Evidence ID Entity Reference      Linked Sheet  Linked Row  expected
+EVD-SYN-0040-POST          IC-0040 COMMENT_EXECUTION          45      44.0
+
+====================================================================================================
+S6 COMPLETENESS_CHECK
+====================================================================================================
+      Date   Entity Scope  Required Rows  Actual Rows Daily Account Data Status Brand Data Status Shop Metrics Status Comment Execution Status Evidence Index Status Recheck Status  Known Gaps            QC Owner QC Result                 Notes
+2026-07-21 Daily Closeout             25           25                  Complete          Complete            Complete                 Complete              Complete       Complete         NaN Interview Candidate      Pass Candidate to complete
+2026-07-22 Daily Closeout             25           24                  Complete          Complete            Complete                   Review              Complete       Complete         NaN Interview Candidate    Review Candidate to complete
+2026-07-23 Daily Closeout             25           25                    Review          Complete            Complete                 Complete              Complete       Complete         NaN Interview Candidate    Review Candidate to complete
+2026-07-24 Daily Closeout             25           25                  Complete          Complete            Complete                 Complete              Complete       Complete         NaN Interview Candidate      Pass Candidate to complete
