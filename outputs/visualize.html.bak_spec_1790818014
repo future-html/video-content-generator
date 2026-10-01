@@ -524,18 +524,14 @@
         background: #fffbea;
         color: #744210;
       } /* เหลืองอ่อน: P ที่ flag */
-      #data-table td.ev-match-ok,
-  #data-table th.ev-match-ok,
-  .ev-match-ok {
-    background: #38a169 !important;
-    color: #ffffff !important;
+      .ev-match-ok {
+    background: #38a169;
+    color: #ffffff;
     font-weight: 700;
   } /* เขียว: จริง */
-      #data-table td.ev-match-fail,
-  #data-table th.ev-match-fail,
-  .ev-match-fail {
-    background: #e53e3e !important;
-    color: #ffffff !important;
+      .ev-match-fail {
+    background: #e53e3e;
+    color: #ffffff;
     font-weight: 700;
   } /* แดง: เท็จ */
 
@@ -800,7 +796,7 @@
   }
 
   /* ให้ body cells อื่นมี background ขาว */
-  #data-table tbody td:not(.ev-match-ok):not(.ev-match-fail) {
+  #data-table tbody td {
     background: #ffffff;
   }
 
@@ -857,7 +853,7 @@
   { id: "P12", level: "ok",   t: "Product Clicks ไม่ตรง (resolved)",          d: "242 → 237 — ตรงกับ input brand_snapshot" },
 
   // ─── Codex mis-analysis (ยังต้อง note) ───
-  { id: "P2-note", level: "warn", t: "Codex mis-analysis (verified)",             d: "Codex ระบุ false positive — ตรวจแล้ว IC-0012 มี keyword 3 คำ → Review ถูกต้อง" },
+  { id: "P2b", level: "warn", t: "Codex mis-analysis (verified)",             d: "Codex ระบุ false positive — ตรวจแล้ว IC-0012 มี keyword 3 คำ → Review ถูกต้อง" },
 
   // ─── Info only (ยังต้องติดตาม) ───
   { id: "P5",  level: "warn", t: "Image Fit ว่าง (ยังต้องติดตาม)",            d: "83/100 rows blank — ต้อง manual review" },

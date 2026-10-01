@@ -857,7 +857,7 @@
   { id: "P12", level: "ok",   t: "Product Clicks ไม่ตรง (resolved)",          d: "242 → 237 — ตรงกับ input brand_snapshot" },
 
   // ─── Codex mis-analysis (ยังต้อง note) ───
-  { id: "P2-note", level: "warn", t: "Codex mis-analysis (verified)",             d: "Codex ระบุ false positive — ตรวจแล้ว IC-0012 มี keyword 3 คำ → Review ถูกต้อง" },
+  { id: "P2b", level: "warn", t: "Codex mis-analysis (verified)",             d: "Codex ระบุ false positive — ตรวจแล้ว IC-0012 มี keyword 3 คำ → Review ถูกต้อง" },
 
   // ─── Info only (ยังต้องติดตาม) ───
   { id: "P5",  level: "warn", t: "Image Fit ว่าง (ยังต้องติดตาม)",            d: "83/100 rows blank — ต้อง manual review" },
